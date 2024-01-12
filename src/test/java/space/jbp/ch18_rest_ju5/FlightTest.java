@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
+import space.jbp.ch18_rest_ju5.beans.FlightBuilder;
 import space.jbp.ch18_rest_ju5.model.Flight;
 import space.jbp.ch18_rest_ju5.register.PassengerRegisterEvent;
 import space.jbp.ch18_rest_ju5.register.RegisterManager;
