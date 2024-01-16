@@ -45,7 +45,7 @@ public class PassengerController {
     return repository.save(passenger);
   }
   
-  @DeleteMapping("/passenger/{id}")
+  @DeleteMapping("/passengers/{id}")
   void deletePassenger(@PathVariable Long id) {
     repository.deleteById(id);
   }
