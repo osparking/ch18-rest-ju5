@@ -41,6 +41,6 @@ class RestAppTest {
     mvc.perform(get("/countries"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(3)));
+        .andExpect(jsonPath("$", hasSize(6)));
   }
 }
