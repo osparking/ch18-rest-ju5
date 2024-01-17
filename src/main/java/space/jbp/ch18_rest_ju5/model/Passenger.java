@@ -1,9 +1,11 @@
 package space.jbp.ch18_rest_ju5.model;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +21,7 @@ public class Passenger {
   @GeneratedValue
   private Long id;
   private String name;
-  @ManyToOne
+  @JdbcTypeCode(SqlTypes.JSON)
   private Country country;
   
   public Passenger(String name, Country country) {
