@@ -1,6 +1,8 @@
 package space.jbp.ch18_rest_ju5.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import jakarta.servlet.ServletException;
+import space.jbp.ch18_rest_ju5.exception.NoPassengerException;
 import space.jbp.ch18_rest_ju5.model.Country;
 import space.jbp.ch18_rest_ju5.model.CountryRepository;
 
@@ -37,11 +41,17 @@ class RestAppTest {
   private CountryRepository countryRepo;
 
   @Test
+  void testNoPassenger() {
+    Throwable throwable = assertThrows(ServletException.class, () -> mvc
+        .perform(get("/passengers/30")).andExpect(status().isNotFound()));
+    assertEquals(NoPassengerException.class, throwable.getCause().getClass());
+  }
+
+  @Test
   void testGetCountries() throws Exception {
     when(countryRepo.findAll())
         .thenReturn(new ArrayList<>(countryMap.values()));
-    mvc.perform(get("/countries"))
-        .andExpect(status().isOk())
+    mvc.perform(get("/countries")).andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", hasSize(6)));
     verify(countryRepo, times(1)).findAll();
