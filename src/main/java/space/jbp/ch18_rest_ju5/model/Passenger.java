@@ -6,6 +6,7 @@ import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Passenger {
   @Id
   @GeneratedValue
