@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,6 +60,13 @@ class RestAppTest {
   private Flight flight;
 
   @Test
+  void testDeletePassenger() throws Exception {
+    mvc.perform(delete("/passengers/4"))
+      .andExpect(status().isOk());
+    verify(passengerRepo, times(1)).deleteById(4L);
+  }
+
+  @Test
   void testPatchPassenger() throws Exception {
     // 승객 생성
     Country aCountry = countryMap.get("US");
@@ -65,8 +74,7 @@ class RestAppTest {
     passenger.setRegistered(false);
     when(passengerRepo.findById(2L)).thenReturn(Optional.of(passenger));
     when(passengerRepo.save(passenger)).thenReturn(passenger);
-    String update = 
-        "{\"name\":\"이구름\", \"registered\": \"true\", \"country\": \"CN\"}";
+    String update = "{\"name\":\"이구름\", \"registered\": \"true\", \"country\": \"CN\"}";
     mvc.perform(patch("/passengers/2").content(update)
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
