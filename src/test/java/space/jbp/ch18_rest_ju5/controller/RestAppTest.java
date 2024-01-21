@@ -4,10 +4,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +50,31 @@ class RestAppTest {
 
   @MockBean
   private CountryRepository countryRepo;
-  
+
   @MockBean
   private PassengerRepository passengerRepo;
 
   @Autowired
   private Flight flight;
+
+  @Test
+  void testPatchPassenger() throws Exception {
+    // 승객 생성
+    Country aCountry = countryMap.get("US");
+    Passenger passenger = new Passenger("이구름", aCountry);
+    passenger.setRegistered(false);
+    when(passengerRepo.findById(2L)).thenReturn(Optional.of(passenger));
+    when(passengerRepo.save(passenger)).thenReturn(passenger);
+    String update = 
+        "{\"name\":\"이구름\", \"registered\": \"true\", \"country\": \"CN\"}";
+    mvc.perform(patch("/passengers/2").content(update)
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+    verify(passengerRepo, times(1)).save(passenger);
+    verify(passengerRepo, times(1)).findById(2L);
+    assertTrue(passengerRepo.findById(2L).get().isRegistered());
+  }
 
   @Test
   void testPostPassenger() throws Exception {
@@ -70,7 +92,7 @@ class RestAppTest {
         .andExpect(jsonPath("$.registered", is(Boolean.FALSE)));
     verify(passengerRepo, times(2)).save(passenger);
   }
-  
+
   @Test
   void testNoPassenger() {
     Throwable throwable = assertThrows(ServletException.class, () -> mvc
