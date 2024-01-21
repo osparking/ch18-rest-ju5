@@ -31,6 +31,7 @@ import jakarta.servlet.ServletException;
 import space.jbp.ch18_rest_ju5.exception.NoPassengerException;
 import space.jbp.ch18_rest_ju5.model.Country;
 import space.jbp.ch18_rest_ju5.model.CountryRepository;
+import space.jbp.ch18_rest_ju5.model.Flight;
 import space.jbp.ch18_rest_ju5.model.Passenger;
 import space.jbp.ch18_rest_ju5.model.PassengerRepository;
 
@@ -49,6 +50,9 @@ class RestAppTest {
   
   @MockBean
   private PassengerRepository passengerRepo;
+
+  @Autowired
+  private Flight flight;
 
   @Test
   void testPostPassenger() throws Exception {
@@ -83,4 +87,17 @@ class RestAppTest {
         .andExpect(jsonPath("$", hasSize(6)));
     verify(countryRepo, times(1)).findAll();
   }
+
+  // @formatter:off
+  @Test
+  void testGetAllPassengers() throws Exception {
+    when(passengerRepo.findAll())
+        .thenReturn(new ArrayList<>(flight.getPassengers()));
+    mvc.perform(get("/passengers"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", hasSize(10)));
+    verify(passengerRepo, times(1)).findAll();
+  }
+  // @formatter:on
 }
